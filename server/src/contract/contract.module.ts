@@ -24,6 +24,7 @@ import { AuthMiddleware } from "src/auth/guards/auth.guard";
   ],
   controllers: [ContractController],
   providers: [ContractService, UserService, JWT],
+  exports: [JwtModule],
 })
 export class ContractModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
