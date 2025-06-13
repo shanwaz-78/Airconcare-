@@ -6,80 +6,80 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { User } from '../../user/entities/user.entity';
-import { ContractStatus } from '../enums/contract-status';
+} from "typeorm";
+import { User } from "../../user/entities/user.entity";
+import { ContractStatus } from "../enums/contract-status";
 
 @Entity()
 export class Contract {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @ManyToOne(() => User, (user) => user.contracts)
-  @JoinColumn({ name: 'clientId' })
+  @JoinColumn({ name: "clientId" })
   client: User;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: ContractStatus,
     default: ContractStatus.QUOTE_REQUESTED,
   })
   status: ContractStatus;
 
   @Column({
-    type: 'varchar',
+    type: "varchar",
     length: 100,
-    comment: 'Type of AC unit (e.g., Split, Window, Central)',
+    comment: "Type of AC unit (e.g., Split, Window, Central)",
   })
   acType: string;
 
   @Column({
-    type: 'int',
+    type: "int",
     unsigned: true,
-    comment: 'Number of AC units to be serviced',
+    comment: "Number of AC units to be serviced",
   })
   unitCount: number;
 
   @Column({
-    type: 'varchar',
+    type: "varchar",
     length: 255,
-    comment: 'Full address where the service will take place',
+    comment: "Full address where the service will take place",
   })
   address: string;
 
   @Column({
-    type: 'timestamp',
-    comment: 'Preferred date for the service by the client',
+    type: "timestamp",
+    comment: "Preferred date for the service by the client",
   })
   preferredDate: Date;
 
   @Column({
-    type: 'timestamp',
+    type: "timestamp",
     nullable: true,
-    comment: 'Actual service date assigned by technician',
+    comment: "Actual service date assigned by technician",
   })
   serviceDate: Date;
 
   @Column({
-    type: 'decimal',
+    type: "decimal",
     precision: 10,
     scale: 2,
     nullable: true,
-    comment: 'Quoted amount in INR',
+    comment: "Quoted amount in INR",
   })
   quoteAmount: number;
 
   @Column({
-    type: 'text',
+    type: "text",
     array: true,
     default: [],
-    comment: 'Internal notes or updates from team',
+    comment: "Internal notes or updates from team",
   })
-  notes?: string[];
+  notes: string[];
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: "timestamp" })
   updatedAt: Date;
 }
