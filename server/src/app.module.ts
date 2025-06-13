@@ -5,6 +5,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { ContractModule } from "./contract/contract.module";
+import { HealthModule } from "./health/health.module";
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { ContractModule } from "./contract/contract.module";
         database: config.get<string>("DB_NAME"),
         autoLoadEntities: true,
         logging: true,
-        synchronize: true,
+        migrationsRun: true,
+        synchronize: false,
       }),
     }),
     JwtModule.registerAsync({
@@ -37,6 +39,7 @@ import { ContractModule } from "./contract/contract.module";
     AuthModule,
     UserModule,
     ContractModule,
+    HealthModule,
   ],
   providers: [],
 })

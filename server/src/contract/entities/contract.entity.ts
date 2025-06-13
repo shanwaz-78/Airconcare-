@@ -19,6 +19,9 @@ export class Contract {
   @JoinColumn({ name: "clientId" })
   client: User;
 
+  @Column({ nullable: false })
+  clientId: string;
+
   @Column({
     type: "enum",
     enum: ContractStatus,
@@ -29,7 +32,7 @@ export class Contract {
   @Column({
     type: "varchar",
     length: 100,
-    comment: "Type of AC unit (e.g., Split, Window, Central)",
+    comment: "Type of AC unit (e.g. Split, Window, Central)",
   })
   acType: string;
 
