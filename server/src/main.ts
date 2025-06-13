@@ -19,7 +19,7 @@ async function bootstrap() {
       message: "Too many requests, Please try again later.",
     })
   );
-  app.enableCors({ origin: "http://localhost:3000", credentials: true });
+  app.enableCors({ origin: process.env.CORS_ORIGIN, credentials: true });
   app.use(cookieParser());
   app.setGlobalPrefix("/api");
   app.useGlobalPipes(
