@@ -8,7 +8,7 @@ import * as cookieParser from "cookie-parser";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const PORT = app.get(ConfigService).get<string>("APP_PORT");
+  const PORT = app.get(ConfigService).get<string>("APP_PORT") || 8181;
   app.use(helmet());
   app.use(
     rateLimit({
@@ -30,6 +30,6 @@ async function bootstrap() {
     })
   );
 
-  await app.listen(PORT ?? 3000);
+  await app.listen(PORT);
 }
 bootstrap();
