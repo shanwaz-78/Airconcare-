@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ContractModule } from './contract/contract.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ContractModule } from './contract/contract.module';
     AuthModule,
     UserModule,
     ContractModule,
+    HealthModule,
   ],
   providers: [],
 })
