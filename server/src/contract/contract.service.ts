@@ -53,27 +53,26 @@ export class ContractService {
     return await this.contractRepository.save(contract);
   }
 
-  async findAll(@Req() req: Request): Promise<any[]> {
-    const user = req.user as DecodedUser;
+  async findAll(user: DecodedUser): Promise<any[]> {
     if (!user) {
-      throw new ForbiddenException("User not found in request");
+      throw new ForbiddenException("User not found");
     }
 
+    const whereCondition = user.role === "admin" ? {} : { clientId: user.sub };
+
     const contracts = await this.contractRepository.find({
-      where: user.role === "admin" ? {} : { clientId: user.sub },
+      where: whereCondition,
       relations: ["client"],
       order: { createdAt: "DESC" },
     });
 
-    const sanitized = contracts.map(({ clientId, client, ...contract }) => {
+    return contracts.map(({ clientId, client, ...contract }) => {
       const { password, ...safeClient } = client;
       return {
         ...contract,
         client: safeClient,
       };
     });
-
-    return sanitized;
   }
 
   async findOne(id: string, user: DecodedUser): Promise<any> {
@@ -93,7 +92,10 @@ export class ContractService {
     const { clientId, client, ...rest } = contract;
     const { password, ...safeClient } = client;
 
-    return contract;
+    return {
+      ...rest,
+      client: safeClient,
+    };
   }
 
   async update(

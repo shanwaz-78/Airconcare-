@@ -5,16 +5,16 @@ import {
   InternalServerErrorException,
   Res,
   Req,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
-import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcryptjs';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
-import { User } from '../user/entities/user.entity';
-import { JWT } from './common/jwt.util';
+} from "@nestjs/common";
+import { Request, Response } from "express";
+import { UserService } from "../user/user.service";
+import * as bcrypt from "bcryptjs";
+import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
+import { User } from "../user/entities/user.entity";
+import { JWT } from "./common/jwt.util";
 
-declare module 'express' {
+declare module "express" {
   interface Request {
     user?: {
       sub: string;
@@ -28,18 +28,18 @@ declare module 'express' {
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtUtils: JWT,
+    private readonly jwtUtils: JWT
   ) {}
 
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userService.findOneByEmail(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     return user;
@@ -47,22 +47,22 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<{
     message: string;
-    user: Omit<User, 'password' | 'contracts'>;
+    user: Omit<User, "password" | "contracts">;
   }> {
     try {
       const existingUser = await this.userService.findOneByEmail(
-        registerDto.email,
+        registerDto.email
       );
       if (existingUser) {
         throw new ConflictException(
-          `Email ${registerDto.email} already in use. Please try with another email.`,
+          `Email ${registerDto.email} already in use. Please try with another email.`
         );
       }
 
-      const saltRounds = parseInt(process.env.SALT_OF_ROUNDS || '10', 10);
+      const saltRounds = parseInt(process.env.SALT_OF_ROUNDS || "10", 10);
       const hashedPassword = await bcrypt.hash(
         registerDto.password,
-        saltRounds,
+        saltRounds
       );
 
       const newUser = await this.userService.create({
@@ -71,7 +71,7 @@ export class AuthService {
       });
 
       return {
-        message: 'Registration successful',
+        message: "Registration successful",
         user: {
           id: newUser.id,
           name: newUser.name,
@@ -82,29 +82,34 @@ export class AuthService {
     } catch (err) {
       console.error(`[Error]: Registration failed. ${err}`);
       if (err instanceof ConflictException) throw err;
-      throw new InternalServerErrorException('Registration failed');
+      throw new InternalServerErrorException("Registration failed");
     }
   }
 
   async login(
     loginDto: LoginDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<{ message: string; user: Omit<User, 'password' | 'email'> }> {
+    @Res({ passthrough: true }) res: Response
+  ): Promise<{
+    message: string;
+    token: string;
+    user: Omit<User, "password" | "email">;
+  }> {
     try {
       const user = await this.validateUser(loginDto.email, loginDto.password);
 
       const payload = { sub: user.id, email: user.email, role: user.role };
       const token = this.jwtUtils.generateToken(payload);
 
-      res.cookie('token', token, {
+      res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: parseInt(process.env.TOKEN_LIMIT || '', 10),
-        sameSite: 'lax',
+        secure: process.env.NODE_ENV === "production",
+        maxAge: parseInt(process.env.TOKEN_LIMIT || "3600000", 10),
+        sameSite: "lax",
       });
 
       return {
-        message: 'Login successful',
+        message: "Login successful",
+        token,
         user: {
           id: user.id,
           name: user.name,

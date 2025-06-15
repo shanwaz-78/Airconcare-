@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { ContractModule } from './contract/contract.module';
-import { HealthModule } from './health/health.module';
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { JwtModule } from "@nestjs/jwt";
+import { UserModule } from "./user/user.module";
+import { AuthModule } from "./auth/auth.module";
+import { ContractModule } from "./contract/contract.module";
+import { HealthModule } from "./health/health.module";
+import { AdminModule } from "./admin/admin.module";
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { HealthModule } from './health/health.module';
         autoLoadEntities: true,
         logging: true,
         migrationsRun: true,
-        synchronize: false,
+        synchronize: true,
       }),
     }),
     JwtModule.registerAsync({
@@ -40,6 +41,7 @@ import { HealthModule } from './health/health.module';
     UserModule,
     ContractModule,
     HealthModule,
+    AdminModule,
   ],
   providers: [],
 })

@@ -16,7 +16,13 @@ export type User = {
   name: string;
   password: string;
   email: string;
-  role: "admin" | "client";
+  role?: "admin" | "client";
+};
+
+export type DecodedUser = {
+  sub: string;
+  email: string;
+  role: string;
 };
 
 export type Contract = {
@@ -30,7 +36,11 @@ export type Contract = {
   serviceDate?: Date;
   quoteAmount?: number;
   notes?: string[];
-  technician?: string;
+};
+
+export type ContractResponse = {
+  notes: Contract[];
+  message: string;
 };
 
 export type FSMStatus =
@@ -41,3 +51,13 @@ export type FSMStatus =
   | "Service Scheduled"
   | "In Progress"
   | "Completed";
+
+export enum ContractStatus {
+  QUOTE_REQUESTED = "Quote Requested",
+  QUOTE_SENT = "Quote Sent",
+  ACCEPTED_BY_CLIENT = "Accepted by Client",
+  PAYMENT_COMPLETED = "Payment Completed",
+  SERVICE_SCHEDULED = "Service Scheduled",
+  IN_PROGRESS = "In Progress",
+  COMPLETED = "Completed",
+}

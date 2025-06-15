@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Contract } from "../../contract/entities/contract.entity";
 import { UserRole } from "../enums/user-role";
 
-@Entity()
+@Entity("user")
 export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;

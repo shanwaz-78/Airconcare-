@@ -1,59 +1,77 @@
-'use client'
+"use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { useRouter } from 'next/navigation'
-import { loginUser, registerUser, getUser } from '../lib/auth'
-import { AuthContextType, User } from '../lib/types'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useRouter } from "next/navigation";
+import { loginUser, registerUser, getUser } from "../lib/auth";
+import { AuthContextType, User } from "../lib/types";
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState(true)
-    const router = useRouter()
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-    useEffect(() => {
-        const initializeAuth = async () => {
-            try {
-                const userData = await getUser()
-                setUser(userData)
-            } catch (error) {
-                setUser(null)
-            } finally {
-                setLoading(false)
-            }
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const response = await getUser();
+        setUser(response.data.user);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      } catch (error) {
+        const storedUser = localStorage.getItem("user");
+        const storedToken = localStorage.getItem("token");
+        if (storedUser && storedToken) {
+          setUser(JSON.parse(storedUser));
         }
-        initializeAuth()
-    }, [])
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const login = async (email: string, password: string) => {
-        const userData = await loginUser(email, password)
-        setUser(userData)
-        router.push(userData.role === 'admin' ? '/admin/dashboard' : '/client/dashboard')
-    }
+    initializeAuth();
+  }, []);
 
-    const register = async (email: string, password: string, role: 'client' | 'admin') => {
-        const userData = await registerUser(email, password, role)
-        setUser(userData)
-        router.push(userData.role === 'admin' ? '/admin/dashboard' : '/client/dashboard')
-    }
+  const login = async (email: string, password: string) => {
+    const response = await loginUser(email, password);
+    const { token, user } = response.data;
 
-    const logout = () => {
-        setUser(null)
-        router.push('/login')
-    }
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
+    return user;
+  };
 
-    return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout }}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+  const register = async (name: string, email: string, password: string) => {
+    const response = await registerUser(name, email, password);
+    setUser(response.data);
+    localStorage.setItem("user", JSON.stringify(response.data));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 export const useAuth = () => {
-    const context = useContext(AuthContext)
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider')
-    }
-    return context
-}
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
