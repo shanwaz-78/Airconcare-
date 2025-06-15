@@ -19,7 +19,6 @@ import {
   User as CurrentUser,
   DecodedUser,
 } from "../auth/decorators/user.decorator";
-import { Request } from "express";
 
 @Controller("contracts")
 export class ContractController {
@@ -31,8 +30,8 @@ export class ContractController {
   }
 
   @Get("all")
-  findAll(@Req() req: Request) {
-    return this.contractService.findAll(req);
+  findAll(@CurrentUser() user: DecodedUser) {
+    return this.contractService.findAll(user);
   }
 
   @Get(":id")

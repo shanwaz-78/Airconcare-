@@ -35,10 +35,10 @@
         "src/app/(auth)/*"
       ],
       "@/client/*": [
-        "src/app/(client)/*"
+        "src/app/client/*"
       ],
       "@/admin/*": [
-        "src/app/(admin)/*"
+        "src/app/admin/*"
       ],
       "@/lib/*": [
         "src/app/lib/*"

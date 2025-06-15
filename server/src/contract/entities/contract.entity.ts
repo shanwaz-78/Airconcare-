@@ -10,7 +10,7 @@ import {
 import { User } from "../../user/entities/user.entity";
 import { ContractStatus } from "../enums/contract-status";
 
-@Entity()
+@Entity("contract")
 export class Contract {
   @PrimaryGeneratedColumn("uuid")
   id: string;
